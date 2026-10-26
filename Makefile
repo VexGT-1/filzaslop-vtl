@@ -7,7 +7,11 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = FilzaApplySandboxExt
 
-FilzaApplySandboxExt_FILES = Tweak.m MCMBridge.m MCMFilzaIntegration.m PosterBoardFeature.m UpdateChecker.m
+FilzaApplySandboxExt_FILES = Tweak.m MCMBridge.m MCMFilzaIntegration.m PosterBoardFeature.m UpdateChecker.m \
+    LiquidGlassUI.m SandboxExtIssue.m \
+    sandbox_escape.m apfs_own.m \
+    kexploit/kexploit_opa334.m kexploit/krw.m kexploit/kutils.m \
+    kexploit/offsets.m kexploit/vnode.m
 
 # --- Flags ---
 FilzaApplySandboxExt_CFLAGS = -I$(PWD)/compat -I$(PWD) -I$(PWD)/XPF/src -I$(PWD)/XPF/external/ChOma/include \

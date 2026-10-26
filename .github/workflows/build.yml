@@ -1,0 +1,52 @@
+name: Build DEB
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Theos
+        run: |
+          set -e
+          export THEOS=~/theos
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+
+      - name: Install Theos Jailed SDK
+        run: |
+          set -e
+          export THEOS=~/theos
+          # Download a rootless SDK for arm64/arm64e iOS 16+
+          curl -Lo /tmp/sdk.tar.xz \
+            "https://github.com/theos/sdks/releases/download/master/iPhoneOS16.5.sdk.tar.xz"
+          mkdir -p ~/theos/sdks
+          tar -xJf /tmp/sdk.tar.xz -C ~/theos/sdks
+
+      - name: Build
+        run: |
+          set -e
+          export THEOS=~/theos
+          export THEOS_MAKE_PATH=~/theos/makefiles
+          # Build as rootless (arm64e, iOS 15+ min) producing a .deb
+          make package \
+            THEOS_PACKAGE_SCHEME=rootless \
+            ARCHS="arm64 arm64e" \
+            TARGET="iphone:clang:latest:15.0" \
+            -j$(sysctl -n hw.logicalcpu) 2>&1
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FilzaSlop-VTL-deb
+          path: packages/*.deb
+          if-no-files-found: error
