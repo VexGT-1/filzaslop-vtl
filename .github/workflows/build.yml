@@ -19,14 +19,12 @@ jobs:
       - name: Install Theos
         run: |
           set -e
-          export THEOS=~/theos
-          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          brew install ldid dpkg
+          git clone --recursive https://github.com/theos/theos.git ~/theos
 
-      - name: Install Theos Jailed SDK
+      - name: Install SDK
         run: |
           set -e
-          export THEOS=~/theos
-          # Download a rootless SDK for arm64/arm64e iOS 16+
           curl -Lo /tmp/sdk.tar.xz \
             "https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS16.5.sdk.tar.xz"
           mkdir -p ~/theos/sdks
@@ -37,7 +35,6 @@ jobs:
           set -e
           export THEOS=~/theos
           export THEOS_MAKE_PATH=~/theos/makefiles
-          # Build as rootless (arm64e, iOS 15+ min) producing a .deb
           make package \
             THEOS_PACKAGE_SCHEME=rootless \
             ARCHS="arm64 arm64e" \
