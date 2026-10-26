@@ -8,8 +8,7 @@ include $(THEOS)/makefiles/common.mk
 LIBRARY_NAME = FilzaApplySandboxExt
 
 FilzaApplySandboxExt_FILES = Tweak.m MCMBridge.m MCMFilzaIntegration.m PosterBoardFeature.m UpdateChecker.m \
-    LiquidGlassUI.m SandboxExtIssue.m \
-    apfs_own.m
+    LiquidGlassUI.m SandboxExtIssue.m
 
 FilzaApplySandboxExt_CFLAGS = -I$(PWD)/compat -I$(PWD) -I$(PWD)/XPF/src -I$(PWD)/XPF/external/ChOma/include \
     -fobjc-arc \
