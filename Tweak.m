@@ -17,9 +17,7 @@
 #include "UpdateChecker.h"
 #include "LiquidGlassUI.h"
 #include "SandboxExtIssue.h"
-#include "sandbox_escape.h"
-#include "kexploit/kexploit_opa334.h"
-#include "kexploit/kutils.h"
+// kexploit removed: requires kernel access, not available without jailbreak
 
 #pragma mark - Root Helper Hooks
 
@@ -1612,20 +1610,6 @@ __attribute__((constructor)) void TweakInit(void) {
     // This grants full filesystem access far beyond what the MCM userspace
     // tricks can reach. Falls through gracefully if the exploit fails.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSLog(@"[VTL-FilzaSlop] running kexploit...");
-        int kret = kexploit_opa334();
-        if (kret == 0) {
-            NSLog(@"[VTL-FilzaSlop] kexploit ok, escaping sandbox...");
-            uint64_t self_proc = proc_find(getpid());
-            int sbret = sandbox_escape(self_proc);
-            NSLog(@"[VTL-FilzaSlop] sandbox_escape=%d", sbret);
-            if (sbret == 0) {
-                int rootret = sandbox_elevate_to_root(self_proc);
-                NSLog(@"[VTL-FilzaSlop] elevate_to_root=%d uid=%d", rootret, getuid());
-            }
-        } else {
-            NSLog(@"[VTL-FilzaSlop] kexploit failed (%d), using userspace fallback", kret);
-        }
         // Issue sandbox extension tokens for broad paths (mond sbx technique).
         // This is the userspace fallback if the kernel exploit doesn't work.
         SandboxExtIssuePaths();

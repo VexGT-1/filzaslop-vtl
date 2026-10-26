@@ -1,4 +1,4 @@
-name: Build DEB
+name: Build Dylib
 
 on:
   push:
@@ -35,15 +35,16 @@ jobs:
           set -e
           export THEOS=~/theos
           export THEOS_MAKE_PATH=~/theos/makefiles
-          make package \
-            THEOS_PACKAGE_SCHEME=rootless \
+          make \
             ARCHS="arm64 arm64e" \
             TARGET="iphone:clang:latest:15.0" \
             -j$(sysctl -n hw.logicalcpu) 2>&1
+          # Copy dylib to workspace root for easy artifact upload
+          find . -name "FilzaApplySandboxExt.dylib" | head -1 | xargs -I{} cp {} FilzaApplySandboxExt.dylib
 
-      - name: Upload DEB artifact
+      - name: Upload dylib artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FilzaSlop-VTL-deb
-          path: packages/*.deb
+          name: FilzaApplySandboxExt-dylib
+          path: FilzaApplySandboxExt.dylib
           if-no-files-found: error
